@@ -3,6 +3,21 @@
 
     <head>
         <title>Tank Time</title>
+        <script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
+        <script>
+            // Initialize Firebase
+            var config = {
+                apiKey: "AIzaSyAfuXcA3ZpmczpkMxNDPQe5FUIDyYRE02Q",
+                authDomain: "tank-time.firebaseapp.com",
+                databaseURL: "https://tank-time.firebaseio.com",
+                storageBucket: "tank-time.appspot.com",
+            };
+            firebase.initializeApp(config);
+            //LETS USE GITHUB TO EDIT (TO TEST IF NORAML HOSTING FIXES ERROERS)
+        </script>
+
+        <link href='https://fonts.googleapis.com/css?family=Chewy' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
         <style>
             html, body, canvas {
                 width:100%;
@@ -17,17 +32,71 @@
             }
             body {
                 background:none;
+                font-family:'Chewy', cursive;
+            }
+            .input-overlay {
+                position:absolute;
+                top:calc(50% - 24px);
+                left:calc(50% - 135px);
+                width:270px;
+                height:40px;
+                border:none;
+                outline:none;
+                padding:0px;
+            }
+            #name {
+                margin:0px;
+                font-size:20px;
+                width:250px;
+                height:20px;
+                border-radius:10px;
+                border:none;
+                outline:none;
+                box-shadow:0 0 25px rgba(0, 0, 0, 0.5);
+                padding:10px;
+                font-family:'Chewy', cursive;
+            }
+            .input-overlay:after {
+                font-family:"FontAwesome";
+                content:"\f061";
+                position:absolute;
+                top:10px;
+                font-size:20px;
+                right:10px;
+                /*text-shadow:0 0 1px rgba(0, 0, 0, 0.9);*/
+                color:rgba(0, 0, 0, 0.5);
             }
         </style>
+
     </head>
 
     <body>
         <canvas id="c"></canvas>
+        <div class="input-overlay">
+            <input id="name">
+        </div>
+
         <script>
             var c = document.getElementById("c");
             var ctx = c.getContext("2d");
             var images = {};
             var playing = false;
+            var username = "";
+            var bullets=[];
+            var players=[];
+            var obstacles=[];
+            var bulletsRef=firebase.database().ref('bullets');
+            var playersRef=firebase.database().ref('players');
+            var obstaclesRef=firebase.database().ref('obstacles');
+            bulletsRef.on('value', function(snapshot) {
+                bullets=snapshot.val();
+            });
+            playersRef.on('value', function(snapshot) {
+                players=snapshot.val();
+            });
+            obstaclesRef.on('value', function(snapshot) {
+                obstacles=snapshot.val();
+            });
 
             function loadImage(src, name) {
                 var dirt_background = new Image();
@@ -41,23 +110,27 @@
             loadImage('https://googledrive.com/host/0B-SZEiT_s4MAVnZ2ckptQXNGSGs/tankBlue.png', "blueTank");
             loadImage('https://googledrive.com/host/0B-SZEiT_s4MAVnZ2ckptQXNGSGs/tankGreen.png', "greenTank");
             loadImage('https://googledrive.com/host/0B-SZEiT_s4MAVnZ2ckptQXNGSGs/tankRed.png', "redTank");
-            
+
             loadImage('https://googledrive.com/host/0B-SZEiT_s4MAVnZ2ckptQXNGSGs/barrelBlue.png', "blueBarrel");
             loadImage('https://googledrive.com/host/0B-SZEiT_s4MAVnZ2ckptQXNGSGs/barrelGreen.png', "greenBarrel");
             loadImage('https://googledrive.com/host/0B-SZEiT_s4MAVnZ2ckptQXNGSGs/barrelRed.png', "redBarrel");
 
             window.addEventListener('resize', resizeCanvas, false);
             resizeCanvas();
-             // Display custom canvas.
-             // In this case it's a blue, 5 pixel border that
-             // resizes along with the browser window.
+
+            function drawBarrel(x, y, rotation, color) {
+                var gV = color + "Tank";
+                if (images[gV] != null) {
+                    ctx.drawImage(images[gV], (x - images[gV].width) / 2 - 100, (y - images[gV].height) / 2);
+                }
+            }
 
             function draw() {
                 ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-                var time = new Date().getMilliseconds() / 1000 ;
+                var time = new Date().getTime() / 1000;
                 if (!playing) {
                     if (images.dirt != null) {
-                        
+
                         //ctx.translate(time* images.dirt.width, time* images.dirt.width);
                         ctx.beginPath();
                         var pattern = ctx.createPattern(images.dirt, "repeat");
@@ -68,45 +141,20 @@
                         ctx.fill();
                         //ctx.translate(-time* images.dirt.width, -time* images.dirt.width);
                     }
-ctx.beginPath();
-ctx.textAlign="center"; 
-ctx.font="50px Verdana";
-ctx.fillStyle="white";
-ctx.translate((window.innerWidth) / 2, (window.innerHeight - 200) / 2);
-ctx.rotate(Math.sin(time*Math.PI*2.0)/10.0);
-ctx.fillText("Pick Your Team",0, 0);
-ctx.fill();
-//ctx.rotate(-Math.sin(time*Math.PI*2.0)/10.0);
-//ctx.translate(-(window.innerWidth) / 2, -(window.innerHeight - 200) / 2);
-ctx.setTransform(1,0,0,1,0,0);
+                    ctx.beginPath();
+                    ctx.textAlign = "center";
+                    ctx.font = "50px Chewy";
+                    ctx.fillStyle = "white";
+                    ctx.translate((window.innerWidth) / 2, (window.innerHeight - 150 - Math.sin(time * Math.PI * 1.0) * 10.0) / 2);
+                    ctx.rotate((Math.sin(time * Math.PI * 2.0) / 20.0) * Math.sin(time * Math.PI * 0.1));
+                    ctx.fillText("Enter Name", 0, 0);
+                    ctx.fill();
+                    //ctx.rotate(-Math.sin(time*Math.PI*2.0)/10.0);
+                    //ctx.translate(-(window.innerWidth) / 2, -(window.innerHeight - 200) / 2);
+                    ctx.setTransform(1, 0, 0, 1, 0, 0);
 
-                    
-                    if (images.blueTank != null) {
-                        ctx.drawImage(images.blueTank, (window.innerWidth - images.blueTank.width) / 2-100, (window.innerHeight - images.blueTank.height) / 2);
-                    }
-                    if (images.greenTank != null) {
-                        ctx.drawImage(images.greenTank, (window.innerWidth - images.greenTank.width) / 2, (window.innerHeight - images.greenTank.height) / 2);
-                    }
-                    if (images.redTank != null) {
-                        ctx.drawImage(images.redTank, (window.innerWidth - images.redTank.width) / 2+100, (window.innerHeight - images.redTank.height) / 2);
-                    }
-                    
-                    if (images.blueBarrel != null) {
-                        ctx.drawImage(images.blueBarrel, (window.innerWidth - images.blueBarrel.width) / 2-100, (window.innerHeight - images.blueBarrel.height*2+images.blueBarrel.width) / 2);
-                    }
-                    
-                    if (images.greenBarrel != null) {
-                        ctx.drawImage(images.greenBarrel, (window.innerWidth - images.blueBarrel.width) / 2, (window.innerHeight - images.blueBarrel.height*2+images.blueBarrel.width) / 2);
-                    }
-                    
-                     if (images.redBarrel != null) {
-                        ctx.drawImage(images.redBarrel, (window.innerWidth - images.blueBarrel.width) / 2+100, (window.innerHeight - images.blueBarrel.height*2+images.blueBarrel.width) / 2);
-                    }
                 }
             }
-             // Runs each time the DOM window resize event fires.
-             // Resets the canvas dimensions to match window,
-             // then draws the new borders accordingly.
 
             function resizeCanvas() {
                 c.width = window.innerWidth;
