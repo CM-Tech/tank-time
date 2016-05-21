@@ -68,10 +68,24 @@ function joinGame(){
 function drawBarrel(x, y, rotation, color) {
     var gV = color + "Barrel";
     if (images[gV] != null) {
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.translate(x,y);
         ctx.rotate((Math.sin(rotation/360 * Math.PI * 2.0) / 20.0) * Math.sin(rotation/360 * Math.PI * 0.1));
-        ctx.drawImage(images[gV], (0- images[gV].width) / 2 - 100, (0 - images[gV].height) / 2);
+        ctx.drawImage(images[gV], (0- images[gV].width) / 2, (0 - images[gV].height) / 2);
+ctx.setTransform(1, 0, 0, 1, 0, 0);
     }
+}
+function drawTank(x, y, rotation,barrelRotation, color) {
+    var gV = color + "Tank";
+    if (images[gV] != null) {
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.translate(x,y);
+        ctx.rotate((Math.sin(rotation/360 * Math.PI * 2.0) / 20.0) * Math.sin(rotation/360 * Math.PI * 0.1));
+        ctx.drawImage(images[gV], (0- images[gV].width) / 2, (0 - images[gV].height) / 2);
+ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+    }
+    drawBarrel(x,y,barrelRotation,color);
 }
 function title(){
   if (images.dirt != null) {
@@ -111,7 +125,7 @@ function draw() {
     }
 }
 function gameLoop(){
-drawBarrel(c.width/2,c.height/2,0,"red");
+drawTank(c.width/2,c.height/2,0,time/10,"blue");
 }
 
 function resizeCanvas() {
