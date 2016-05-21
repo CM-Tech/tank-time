@@ -60,6 +60,7 @@ function typeKey(event){
 var gHost='https://raw.githubusercontent.com/CM-Tech/tank-time/gh-pages';
 //loadImage('https://googledrive.com/host/0B-SZEiT_s4MARkhxZmJyb1ZCQlE/dirt.png', "dirt");
 loadImage(gHost+'/Environment/dirt.png', "dirt");
+loadImage(gHost+'/Environment/treeSmall.png', "smallTree");
 loadImage(gHost+'/Tanks/tankBlue.png', "blueTank");
 loadImage(gHost+'/Tanks/tankGreen.png', "greenTank");
 loadImage(gHost+'/Tanks/tankRed.png', "redTank");
@@ -74,7 +75,7 @@ resizeCanvas();
 function joinGame(){
     username=document.getElementById("name").value;
     document.getElementById("input-overlay").classList.add("hide");
-    myTank={name:username,x:worldWidth/2,y:worldWidth/2,joinTime:time,direction:0,barrelDirection:0};
+    myTank={name:username,x:worldWidth/2,y:worldWidth/2,joinTime:time,direction:0,barrelDirection:0,lastUpdate:time};
     playerRef=playersRef.push(myTank);
     playing = true;
 }
@@ -154,9 +155,12 @@ function gameLoop(){
   myTank.barrelDirection=Math.atan2(mouse.y-c.height/2,mouse.x-c.width/2)/Math.PI*180;
   if(mouse.d){
   myTank.direction=rotateTowards(myTank.direction,myTank.barrelDirection,1);
-  myTank.x+=Math.cos(myTank.direction);
-  myTank.y+=Math.sin(myTank.direction);
+  myTank.x+=Math.cos(myTank.direction/180*Math.PI);
+  myTank.y+=Math.sin(myTank.direction/180*Math.PI);
+
   }
+  myTank.lastUpdate=time;
+  playerRef.set(myTank);
   if (images.dirt != null) {
 
       ctx.translate(-myTank.x,-myTank.y);
@@ -171,7 +175,26 @@ function gameLoop(){
     //  console.log("dirt");
       //ctx.translate(-time* images.dirt.width, -time* images.dirt.width);
   }
-drawTank(c.width/2,c.height/2,0,myTank.barrelDirection,"blue");
+  for(var i in players){
+    var theTank=players[i];
+    if(theTank!="M"){
+      if(theTank.direction!==undefined){
+      drawTank(c.width/2-myTank.x+theTank.x,c.height/2-myTank.y+theTank.y,theTank.direction,theTank.barrelDirection,"blue");
+if(time-theTank.lastUpdate>1000){
+firebase.database().ref('server/players/'+i).set(null);
+}
+}
+}
+    }
+    var treeOutset=((Math.ceil(worldWidth/100)*100+100)-worldWidth)/2;
+    for(var tX=-treeOutset;tX<=worldWidth+treeOutset;tX+=100){
+      var im="smallTree";
+      if (images[im] != null) {
+          ctx.drawImage(images[im], (c.width/2-myTank.x- images[im].width/ 2)+tX , (c.height/2-myTank.y - images[im].height/ 2)-treeOutset );
+
+      }
+    }
+    //drawTank(c.width/2,c.height/2,myTank.direction,myTank.barrelDirection,"blue");
 }
 
 function resizeCanvas() {
