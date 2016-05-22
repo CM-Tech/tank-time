@@ -69,6 +69,10 @@ loadImage(gHost+'/Tanks/barrelBlue.png', "blueBarrel");
 loadImage(gHost+'/Tanks/barrelGreen.png', "greenBarrel");
 loadImage(gHost+'/Tanks/barrelRed.png', "redBarrel");
 
+loadImage(gHost+'/Bullets/bulletBlue.png', "blueBullet");
+loadImage(gHost+'/Bullets/bulletGreen.png', "greenBullet");
+loadImage(gHost+'/Bullets/bulletRed.png', "redBullet");
+
 window.addEventListener('resize', resizeCanvas, false);
 resizeCanvas();
 //called to join the game
@@ -89,6 +93,18 @@ function drawBarrel(x, y, rotation, color) {
         ctx.translate(x,y);
         ctx.rotate((rotation/360.0+0.25) * Math.PI * 2.0);
         ctx.drawImage(images[gV], (0- images[gV].width) / 2, (images[gV].width - images[gV].height*2) / 2);
+ctx.setTransform(1, 0, 0, 1, 0, 0);
+    }
+}
+function drawBullet(x, y, rotation, color) {
+    var gV = color + "Bullet";
+    if (images[gV] != null) {
+      //console.log(gV,rotation,rotation/360.0 * Math.PI * 2.0);
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.beginPath();
+        ctx.translate(x,y);
+        ctx.rotate((rotation/360.0+0.25) * Math.PI * 2.0);
+        ctx.drawImage(images[gV], (0- images[gV].width) / 2, (0- images[gV].height) / 2);
 ctx.setTransform(1, 0, 0, 1, 0, 0);
     }
 }
@@ -151,6 +167,13 @@ function draw() {
       gameLoop();
     }
 }
+function shootBullet(x,y,direction){
+  var bullet={x:x,y:y,direction:direction,creation:time};
+  bulletsRef.push(bullet);
+}
+function fireTank(){
+  shootBullet(myTank.x,myTank.y,myTank.barrelDirection);
+}
 function gameLoop(){
   myTank.barrelDirection=Math.atan2(mouse.y-c.height/2,mouse.x-c.width/2)/Math.PI*180;
   if(mouse.d){
@@ -186,17 +209,39 @@ firebase.database().ref('server/players/'+i).set(null);
 }
 }
     }
+
+    for(var i in bullets){
+      var theBullet=bullets[i];
+      if(theBullet!="M"){
+        if(theBullet.direction!==undefined){
+          var cTime=time-theBullet.creation;
+        drawBullet(c.width/2-myTank.x+theBullet.x+Math.cos(theBullet.direction/180*Math.PI)*cTime/2,c.height/2-myTank.y+theBullet.y+Math.sin(theBullet.direction/180*Math.PI)*cTime/2,theBullet.direction,"blue");
+  if(time-theBullet.creation>3000){
+  firebase.database().ref('server/bullets/'+i).set(null);
+  }
+  }
+  }
+      }
+
     var treeOutset=((Math.ceil(worldWidth/100)*100+100)-worldWidth)/2;
     for(var tX=-treeOutset;tX<=worldWidth+treeOutset;tX+=100){
       var im="smallTree";
       if (images[im] != null) {
           ctx.drawImage(images[im], (c.width/2-myTank.x- images[im].width/ 2)+tX , (c.height/2-myTank.y - images[im].height/ 2)-treeOutset );
+          ctx.drawImage(images[im], (c.width/2-myTank.x- images[im].width/ 2)+tX , (c.height/2-myTank.y - images[im].height/ 2)+treeOutset+worldWidth );
+          ctx.drawImage(images[im], (c.width/2-myTank.x- images[im].width/ 2)+treeOutset+worldWidth , (c.height/2-myTank.y - images[im].height/ 2)+tX );
+          ctx.drawImage(images[im], (c.width/2-myTank.x- images[im].width/ 2)-treeOutset , (c.height/2-myTank.y - images[im].height/ 2)+tX );
 
       }
     }
     //drawTank(c.width/2,c.height/2,myTank.direction,myTank.barrelDirection,"blue");
 }
-
+function pressKey(event){
+  console.log(event.which);
+  if(event.which==32 && playing){
+    fireTank();
+  }
+}
 function resizeCanvas() {
     c.width = window.innerWidth;
     c.height = window.innerHeight;
