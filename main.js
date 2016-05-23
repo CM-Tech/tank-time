@@ -10,12 +10,14 @@ var playing = false;
 var username = "";
 var bullets = [];
 var players = [];
+var tracks = [];
 var obstacles = [];
 var myTank = {};
 var playerRef;
 var bulletsRef = firebase.database().ref('server/bullets');
 var playersRef = firebase.database().ref('server/players');
 var obstaclesRef = firebase.database().ref('server/obstacles');
+var tracksRef = firebase.database().ref('server/tracks');
 var time = new Date().getTime();
 var timeOffset = 0;
 var worldWidth = 5000;
@@ -24,6 +26,8 @@ var treeCords = [];
 var score = 0;
 var offsetRef = firebase.database().ref(".info/serverTimeOffset");
 var scoreListen;
+var trackLength=10;
+var lastTrack=trackLength;
 offsetRef.on("value", function(snap) {
     timeOffset = snap.val();
     time = new Date().getTime() + timeOffset;
@@ -36,6 +40,9 @@ playersRef.on('value', function(snapshot) {
 });
 obstaclesRef.on('value', function(snapshot) {
     obstacles = snapshot.val();
+});
+tracksRef.on('value', function(snapshot) {
+    tracks = snapshot.val();
 });
 firebase.database().ref('server/width').on('value', function(snapshot) {
     worldWidth = snapshot.val();
@@ -80,6 +87,8 @@ loadImage(gHost + '/Tanks/barrelRed.png', "redBarrel");
 loadImage(gHost + '/Bullets/bulletBlueSilver.png', "blueBullet");
 loadImage(gHost + '/Bullets/bulletGreenSilver.png', "greenBullet");
 loadImage(gHost + '/Bullets/bulletRedSilver.png', "redBullet");
+
+loadImage(gHost + '/Tanks/tracksSmall.png', "smallTracks");
 
 window.addEventListener('resize', resizeCanvas, false);
 resizeCanvas();
@@ -154,6 +163,19 @@ function drawBarrel(x, y, rotation, color) {
 }
 function drawBullet(x, y, rotation, color) {
     var gV = color + "Bullet";
+    if (images[gV] != null ) {
+
+        //console.log(gV,rotation,rotation/360.0 * Math.PI * 2.0);
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.beginPath();
+        ctx.translate(x, y);
+        ctx.rotate((rotation / 360.0 + 0.25) * Math.PI * 2.0);
+        ctx.drawImage(images[gV], (0 - images[gV].width) / 2, (0 - images[gV].height) / 2);
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+    }
+}
+function drawTrack(x, y, rotation, size) {
+    var gV = size + "Tracks";
     if (images[gV] != null ) {
 
         //console.log(gV,rotation,rotation/360.0 * Math.PI * 2.0);
@@ -252,7 +274,11 @@ function gameLoop() {
         myTank.direction = rotateTowards(myTank.direction, myTank.barrelDirection, 1);
         myTank.x += Math.cos(myTank.direction / 180 * Math.PI) * (time - myTank.lastUpdate) / 4;
         myTank.y += Math.sin(myTank.direction / 180 * Math.PI) * (time - myTank.lastUpdate) / 4;
-
+lastTrack-=(time - myTank.lastUpdate)/4;
+if(lastTrack<0){
+  lastTrack=trackLength;
+  tracksRef.push({creation:time,direction:myTank.direction,x:myTank.x,y:myTank.y});
+}
     }
     myTank.x = Math.max(Math.min(worldWidth, myTank.x), 0);
     myTank.y = Math.max(Math.min(worldWidth, myTank.y), 0);
@@ -277,6 +303,20 @@ function gameLoop() {
         //  console.log("dirt");
         //ctx.translate(-time* images.dirt.width, -time* images.dirt.width);
     }
+    for (var i in tracks) {
+        var theTrack = tracks[i];
+        if (theTrack != "M") {
+            if (theTrack.direction !== undefined) {
+              var cTime = time - theTrack.creation;
+              drawTrack(c.width / 2 - myTank.x + theTrack.x , c.height / 2 - myTank.y + theTrack.y , theTrack.direction, "small");
+              if (time - theTrack.creation > 3000) {
+                  firebase.database().ref('server/tracks/' + i).set(null );
+              } else {
+
+              }
+            }
+          }
+        }
     for (var i in players) {
         var theTank = players[i];
         if (theTank != "M") {
@@ -462,6 +502,7 @@ function gameLoop() {
 
       }
     }*/
+
     var im = "smallTree";
 
     if (images[im] != null ) {
