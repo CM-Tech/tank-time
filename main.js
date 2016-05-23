@@ -26,7 +26,7 @@ var treeCords = [];
 var score = 0;
 var offsetRef = firebase.database().ref(".info/serverTimeOffset");
 var scoreListen;
-var trackLength=10;
+var trackLength=16;
 var lastTrack=trackLength;
 offsetRef.on("value", function(snap) {
     timeOffset = snap.val();
