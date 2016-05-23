@@ -381,7 +381,11 @@ function gameLoop() {
                         x: -myTank.x + theBullet2.x + Math.cos(theBullet2.direction / 180 * Math.PI) * cTime / 2,
                         y: -myTank.y + theBullet2.y + Math.sin(theBullet2.direction / 180 * Math.PI) * cTime / 2
                     }
-                    if (Math.sqrt(bulletRelPos.x * bulletRelPos.x + bulletRelPos.y * bulletRelPos.y) < 200) {
+                    var bulletRelPos3 = {
+                        x: bulletRelPos.x-bulletRelPos2.x,
+                        y: bulletRelPos.y-bulletRelPos2.y
+                    }
+                    if (Math.sqrt(bulletRelPos3.x * bulletRelPos3.x + bulletRelPos3.y * bulletRelPos3.y) < 200) {
                         var bulletPolygon = [{
                             x: -26 / 2,
                             y: -12 / 2
