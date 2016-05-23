@@ -41,7 +41,7 @@ firebase.database().ref('server/width').on('value', function(snapshot) {
     worldWidth = snapshot.val();
 });
 function updateMouse(event, type) {
-    
+
     mouse.x = event.clientX;
     mouse.y = event.clientY;
     if (type === 1) {
@@ -53,7 +53,7 @@ function updateMouse(event, type) {
 }
 function loadImage(src, name) {
     var dirt_background = new Image();
-    
+
     dirt_background.src = src;
     dirt_background.onload = function() {
         images[name] = this;
@@ -86,14 +86,14 @@ resizeCanvas();
 noise.seed(3017);
 
 function setUpTrees() {
-    
+
     treeCords = [];
     var treeOutset = ((Math.ceil(worldWidth / 100) * 100 + 400) - worldWidth) / 2;
     for (var tY = -treeOutset; tY <= worldWidth + treeOutset; tY += 100) {
-        
+
         for (var tX = -treeOutset; tX <= worldWidth + treeOutset; tX += 100) {
             if (Math.abs(tY - worldWidth / 2) > worldWidth / 2 || Math.abs(tX - worldWidth / 2) > worldWidth / 2) {
-                
+
                 var pos1 = {
                     x: tX,
                     y: tY
@@ -155,7 +155,7 @@ function drawBarrel(x, y, rotation, color) {
 function drawBullet(x, y, rotation, color) {
     var gV = color + "Bullet";
     if (images[gV] != null ) {
-        
+
         //console.log(gV,rotation,rotation/360.0 * Math.PI * 2.0);
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.beginPath();
@@ -180,13 +180,13 @@ function drawTank(x, y, rotation, barrelRotation, color) {
 }
 function title() {
     if (images.dirt != null ) {
-        
+
         //ctx.translate(time* images.dirt.width, time* images.dirt.width);
         ctx.beginPath();
         var pattern = ctx.createPattern(images.dirt, "repeat");
         ctx.fillStyle = pattern;
-        
-        
+
+
         ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
         ctx.fill();
         //ctx.translate(-time* images.dirt.width, -time* images.dirt.width);
@@ -216,10 +216,10 @@ function draw() {
     time = new Date().getTime() + timeOffset;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-    
+
     if (!playing) {
         title();
-    
+
     } else {
         gameLoop();
     }
@@ -241,9 +241,9 @@ function fireTank() {
     }
 }
 function intersectRect(r1, r2) {
-    return !(r2.x > r1.x + r1.w || 
-    r2.x + r2.w < r1.x || 
-    r2.y > r1.y + r1.h || 
+    return !(r2.x > r1.x + r1.w ||
+    r2.x + r2.w < r1.x ||
+    r2.y > r1.y + r1.h ||
     r2.y + r2.h < r1.y);
 }
 function gameLoop() {
@@ -252,25 +252,25 @@ function gameLoop() {
         myTank.direction = rotateTowards(myTank.direction, myTank.barrelDirection, 1);
         myTank.x += Math.cos(myTank.direction / 180 * Math.PI) * (time - myTank.lastUpdate) / 4;
         myTank.y += Math.sin(myTank.direction / 180 * Math.PI) * (time - myTank.lastUpdate) / 4;
-    
+
     }
     myTank.x = Math.max(Math.min(worldWidth, myTank.x), 0);
     myTank.y = Math.max(Math.min(worldWidth, myTank.y), 0);
     myTank.lastUpdate = time;
-    
+
     playerRef.child("x").set(myTank.x);
     playerRef.child("y").set(myTank.y);
     playerRef.child("direction").set(myTank.direction);
     playerRef.child("barrelDirection").set(myTank.barrelDirection);
     playerRef.child("lastUpdate").set(myTank.lastUpdate);
     if (images.dirt != null ) {
-        
+
         ctx.translate(-myTank.x, -myTank.y);
         ctx.beginPath();
         var pattern = ctx.createPattern(images.dirt, "repeat");
         ctx.fillStyle = pattern;
-        
-        
+
+
         ctx.fillRect(myTank.x, myTank.y, window.innerWidth, window.innerHeight);
         ctx.fill();
         ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -282,13 +282,19 @@ function gameLoop() {
         if (theTank != "M") {
             if (theTank.direction !== undefined) {
                 drawTank(c.width / 2 - myTank.x + theTank.x, c.height / 2 - myTank.y + theTank.y, theTank.direction, theTank.barrelDirection, "blue");
+                ctx.beginPath();
+                ctx.textAlign = "center";
+                ctx.font = "20px Chewy";
+                ctx.fillStyle = "white";
+                ctx.fillText(theTank.name, c.width / 2 - myTank.x + theTank.x, c.height / 2 - myTank.y + theTank.y+60);
+                ctx.fill();
                 if (time - theTank.lastUpdate > 10000) {
                     firebase.database().ref('server/players/' + i).set(null );
                 }
             }
         }
     }
-    
+
     for (var i in bullets) {
         var theBullet = bullets[i];
         if (theBullet != "M") {
@@ -347,18 +353,18 @@ function gameLoop() {
                             playersRef.child(theBullet.owner).child("score").transaction(function(current_value) {
                                 return (current_value || 0) + 1;
                             });
-                            
-                            
+
+
                             playerRef.child("score").off('value', scoreListen);
                             playerRef.set(null );
                             document.getElementById("input-overlay").classList.remove("hide");
                             playing = false;
-                        
-                        
+
+
                         }
                     }
                 }
-            
+
             }
         }
     }
@@ -372,7 +378,7 @@ function gameLoop() {
             if (theBullet2.direction !== undefined) {
                 var cTime = time - theBullet.creation;
                 var cTime2 = time - theBullet2.creation;
-                
+
                     var bulletRelPos = {
                         x: -myTank.x + theBullet.x + Math.cos(theBullet.direction / 180 * Math.PI) * cTime / 2,
                         y: -myTank.y + theBullet.y + Math.sin(theBullet.direction / 180 * Math.PI) * cTime / 2
@@ -385,7 +391,7 @@ function gameLoop() {
                         x: bulletRelPos.x-bulletRelPos2.x,
                         y: bulletRelPos.y-bulletRelPos2.y
                     }
-                    if (Math.sqrt(bulletRelPos3.x * bulletRelPos3.x + bulletRelPos3.y * bulletRelPos3.y) < 200) {
+                    if (Math.sqrt(bulletRelPos3.x * bulletRelPos3.x + bulletRelPos3.y * bulletRelPos3.y) < 100) {
                         var bulletPolygon = [{
                             x: -26 / 2,
                             y: -12 / 2
@@ -429,18 +435,18 @@ function gameLoop() {
                         if (doPolygonsIntersect(bulletPolygon, bulletPolygon2)) {
                         bulletsRef.child(i).set(null);
                         bulletsRef.child(i2).set(null);
-                        
+
                         }
                     }
-                
-            
+
+
             }
         }
     }
             }
         }
     }
-    
+
     /*var treeOutset=((Math.ceil(worldWidth/100)*100+100)-worldWidth)/2;
     for(var tX=-treeOutset;tX<=worldWidth+treeOutset;tX+=100){
       var im="smallTree";
@@ -457,11 +463,11 @@ function gameLoop() {
       }
     }*/
     var im = "smallTree";
-    
+
     if (images[im] != null ) {
         var tree = images[im];
         for (var i = 0; i < treeCords.length; i++) {
-            
+
             var pos1 = treeCords[i];
             ctx.drawImage(images[im], pos1.x + c.width / 2 - myTank.x - tree.width / 2, pos1.y + c.height / 2 - myTank.y - tree.height / 2);
         }
@@ -488,25 +494,25 @@ function isUndefined(v) {
 function doPolygonsIntersect(a, b) {
     var polygons = [a, b];
     var minA, maxA, projected, i, i1, j, minB, maxB;
-    
+
     for (i = 0; i < polygons.length; i++) {
-        
+
         // for each polygon, look at each edge of the polygon, and determine if it separates
         // the two shapes
         var polygon = polygons[i];
         for (i1 = 0; i1 < polygon.length; i1++) {
-            
+
             // grab 2 vertices to create an edge
             var i2 = (i1 + 1) % polygon.length;
             var p1 = polygon[i1];
             var p2 = polygon[i2];
-            
+
             // find the line perpendicular to this edge
             var normal = {
                 x: p2.y - p1.y,
                 y: p1.x - p2.x
             };
-            
+
             minA = maxA = undefined;
             // for each vertex in the first shape, project it onto the line perpendicular to the edge
             // and keep track of the min and max of these values
@@ -519,7 +525,7 @@ function doPolygonsIntersect(a, b) {
                     maxA = projected;
                 }
             }
-            
+
             // for each vertex in the second shape, project it onto the line perpendicular to the edge
             // and keep track of the min and max of these values
             minB = maxB = undefined;
@@ -532,7 +538,7 @@ function doPolygonsIntersect(a, b) {
                     maxB = projected;
                 }
             }
-            
+
             // if there is no overlap between the projects, the edge we are looking at separates the two
             // polygons, and we know there is no overlap
             if (maxA < minB || maxB < minA) {
