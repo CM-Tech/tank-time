@@ -330,6 +330,7 @@ if(lastTrack<0){
                 ctx.fill();
                 if (time - theTank.lastUpdate > 10000) {
                     firebase.database().ref('server/players/' + i).set(null );
+                    delete players[i];
                 }
             }
         }
@@ -343,12 +344,14 @@ if(lastTrack<0){
                 drawBullet(c.width / 2 - myTank.x + theBullet.x + Math.cos(theBullet.direction / 180 * Math.PI) * cTime / 2, c.height / 2 - myTank.y + theBullet.y + Math.sin(theBullet.direction / 180 * Math.PI) * cTime / 2, theBullet.direction, "blue");
                 if (time - theBullet.creation > 3000) {
                     firebase.database().ref('server/bullets/' + i).set(null );
+                    delete bullets[i];
+
                 } else {
                     var bulletRelPos = {
                         x: -myTank.x + theBullet.x + Math.cos(theBullet.direction / 180 * Math.PI) * cTime / 2,
                         y: -myTank.y + theBullet.y + Math.sin(theBullet.direction / 180 * Math.PI) * cTime / 2
                     }
-                    if (Math.sqrt(bulletRelPos.x * bulletRelPos.x + bulletRelPos.y * bulletRelPos.y) < 200) {
+                    if (Math.sqrt(bulletRelPos.x * bulletRelPos.x + bulletRelPos.y * bulletRelPos.y) < 200 && theBullet.owner!==playerRef.key) {
                         var bulletPolygon = [{
                             x: -26 / 2,
                             y: -12 / 2
@@ -389,7 +392,7 @@ if(lastTrack<0){
                             bulletPolygon[pI].x = Math.cos(dir) * dist + bulletRelPos.x;
                             bulletPolygon[pI].y = Math.sin(dir) * dist + bulletRelPos.y;
                         }
-                        if (doPolygonsIntersect(tankPolygon, bulletPolygon) && theBullet.owner!==playerRef.key) {
+                        if (doPolygonsIntersect(tankPolygon, bulletPolygon)) {
                             playersRef.child(theBullet.owner).child("score").transaction(function(current_value) {
                                 return (current_value || 0) + 1;
                             });
@@ -399,6 +402,8 @@ if(lastTrack<0){
                             playerRef.set(null );
                             document.getElementById("input-overlay").classList.remove("hide");
                             playing = false;
+                            firebase.database().ref('server/bullets/' + i).set(null );
+                            delete bullets[i];
 
 
                         }
