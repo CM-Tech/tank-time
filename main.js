@@ -343,7 +343,7 @@ function gameLoop() {
                             bulletPolygon[pI].x = Math.cos(dir) * dist + bulletRelPos.x;
                             bulletPolygon[pI].y = Math.sin(dir) * dist + bulletRelPos.y;
                         }
-                        if (doPolygonsIntersect(tankPolygon, bulletPolygon)) {
+                        if (doPolygonsIntersect(tankPolygon, bulletPolygon) && theBullet.owner!==playerRef.key) {
                             playersRef.child(theBullet.owner).child("score").transaction(function(current_value) {
                                 return (current_value || 0) + 1;
                             });
