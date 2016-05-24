@@ -522,8 +522,25 @@ if(lastTrack<0){
     ctx.textAlign = "left";
     ctx.font = "50px Chewy";
     ctx.fillStyle = "white";
-    ctx.fillText("score: " + score, 50, c.height - 100);
+    ctx.fillText("score: " + score, 50, c.height - 60);
     ctx.fill();
+    ctx.beginPath();
+    ctx.fillStyle = "white";
+    ctx.strokeStyle = "white";
+    ctx.strokeRect(c.width-110,c.height - 110,100,100);
+    ctx.stroke();
+    for (var i in players) {
+        var theTank = players[i];
+        if (theTank != "M") {
+            if (theTank.direction !== undefined) {
+              ctx.beginPath();
+              ctx.fillStyle = "white";
+              ctx.fillRect(c.width-110+theTank.x/worldWidth*100,c.height - 110+theTank.y/worldWidth*100,1,1);
+              ctx.fill();
+
+            }
+        }
+    }
     //drawTank(c.width/2,c.height/2,myTank.direction,myTank.barrelDirection,"blue");
 }
 function isUndefined(v) {
