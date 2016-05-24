@@ -415,11 +415,11 @@ if(lastTrack<0){
     }
     for (var i in bullets) {
         var theBullet = bullets[i];
-        if (theBullet != "M") {
+        if (theBullet != "M" && theBullet !== undefined) {
             if (theBullet.direction !== undefined) {
     for (var i2 in bullets) {
         var theBullet2 = bullets[i2];
-        if (theBullet2 != "M" && theBullet2!=theBullet) {
+        if (theBullet2 != "M" && theBullet2!=theBullet && theBullet2 !== undefined) {
             if (theBullet2.direction !== undefined) {
                 var cTime = time - theBullet.creation;
                 var cTime2 = time - theBullet2.creation;
