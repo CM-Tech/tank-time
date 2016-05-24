@@ -429,8 +429,8 @@ if(lastTrack<0){
                         y: -myTank.y + theBullet.y + Math.sin(theBullet.direction / 180 * Math.PI) * cTime / 2
                     }
                     var bulletRelPos2 = {
-                        x: -myTank.x + theBullet2.x + Math.cos(theBullet2.direction / 180 * Math.PI) * cTime / 2,
-                        y: -myTank.y + theBullet2.y + Math.sin(theBullet2.direction / 180 * Math.PI) * cTime / 2
+                        x: -myTank.x + theBullet2.x + Math.cos(theBullet2.direction / 180 * Math.PI) * cTime2 / 2,
+                        y: -myTank.y + theBullet2.y + Math.sin(theBullet2.direction / 180 * Math.PI) * cTime2 / 2
                     }
                     var bulletRelPos3 = {
                         x: bulletRelPos.x-bulletRelPos2.x,
