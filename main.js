@@ -330,6 +330,7 @@ if(lastTrack<0){
                 ctx.fill();
                 if (time - theTank.lastUpdate > 10000) {
                     firebase.database().ref('server/players/' + i).set(null );
+                    delete players[i];
                 }
             }
         }
@@ -343,12 +344,14 @@ if(lastTrack<0){
                 drawBullet(c.width / 2 - myTank.x + theBullet.x + Math.cos(theBullet.direction / 180 * Math.PI) * cTime / 2, c.height / 2 - myTank.y + theBullet.y + Math.sin(theBullet.direction / 180 * Math.PI) * cTime / 2, theBullet.direction, "blue");
                 if (time - theBullet.creation > 3000) {
                     firebase.database().ref('server/bullets/' + i).set(null );
+                    delete bullets[i];
+
                 } else {
                     var bulletRelPos = {
                         x: -myTank.x + theBullet.x + Math.cos(theBullet.direction / 180 * Math.PI) * cTime / 2,
                         y: -myTank.y + theBullet.y + Math.sin(theBullet.direction / 180 * Math.PI) * cTime / 2
                     }
-                    if (Math.sqrt(bulletRelPos.x * bulletRelPos.x + bulletRelPos.y * bulletRelPos.y) < 200) {
+                    if (Math.sqrt(bulletRelPos.x * bulletRelPos.x + bulletRelPos.y * bulletRelPos.y) < 200 && theBullet.owner!==playerRef.key) {
                         var bulletPolygon = [{
                             x: -26 / 2,
                             y: -12 / 2
@@ -389,7 +392,7 @@ if(lastTrack<0){
                             bulletPolygon[pI].x = Math.cos(dir) * dist + bulletRelPos.x;
                             bulletPolygon[pI].y = Math.sin(dir) * dist + bulletRelPos.y;
                         }
-                        if (doPolygonsIntersect(tankPolygon, bulletPolygon) && theBullet.owner!==playerRef.key) {
+                        if (doPolygonsIntersect(tankPolygon, bulletPolygon)) {
                             playersRef.child(theBullet.owner).child("score").transaction(function(current_value) {
                                 return (current_value || 0) + 1;
                             });
@@ -399,6 +402,8 @@ if(lastTrack<0){
                             playerRef.set(null );
                             document.getElementById("input-overlay").classList.remove("hide");
                             playing = false;
+                            firebase.database().ref('server/bullets/' + i).set(null );
+                            delete bullets[i];
 
 
                         }
@@ -410,11 +415,11 @@ if(lastTrack<0){
     }
     for (var i in bullets) {
         var theBullet = bullets[i];
-        if (theBullet != "M") {
+        if (theBullet != "M" && theBullet !== undefined) {
             if (theBullet.direction !== undefined) {
     for (var i2 in bullets) {
         var theBullet2 = bullets[i2];
-        if (theBullet2 != "M" && theBullet2!=theBullet) {
+        if (theBullet2 != "M" && theBullet2!=theBullet && theBullet2 !== undefined) {
             if (theBullet2.direction !== undefined) {
                 var cTime = time - theBullet.creation;
                 var cTime2 = time - theBullet2.creation;
@@ -424,8 +429,8 @@ if(lastTrack<0){
                         y: -myTank.y + theBullet.y + Math.sin(theBullet.direction / 180 * Math.PI) * cTime / 2
                     }
                     var bulletRelPos2 = {
-                        x: -myTank.x + theBullet2.x + Math.cos(theBullet2.direction / 180 * Math.PI) * cTime / 2,
-                        y: -myTank.y + theBullet2.y + Math.sin(theBullet2.direction / 180 * Math.PI) * cTime / 2
+                        x: -myTank.x + theBullet2.x + Math.cos(theBullet2.direction / 180 * Math.PI) * cTime2 / 2,
+                        y: -myTank.y + theBullet2.y + Math.sin(theBullet2.direction / 180 * Math.PI) * cTime2 / 2
                     }
                     var bulletRelPos3 = {
                         x: bulletRelPos.x-bulletRelPos2.x,
@@ -517,8 +522,25 @@ if(lastTrack<0){
     ctx.textAlign = "left";
     ctx.font = "50px Chewy";
     ctx.fillStyle = "white";
-    ctx.fillText("score: " + score, 50, c.height - 100);
+    ctx.fillText("score: " + score, 50, c.height - 60);
     ctx.fill();
+    ctx.beginPath();
+    ctx.fillStyle = "white";
+    ctx.strokeStyle = "white";
+    ctx.strokeRect(c.width-110,c.height - 110,100,100);
+    ctx.stroke();
+    for (var i in players) {
+        var theTank = players[i];
+        if (theTank != "M") {
+            if (theTank.direction !== undefined) {
+              ctx.beginPath();
+              ctx.fillStyle = "white";
+              ctx.fillRect(c.width-110+theTank.x/worldWidth*100,c.height - 110+theTank.y/worldWidth*100,1,1);
+              ctx.fill();
+
+            }
+        }
+    }
     //drawTank(c.width/2,c.height/2,myTank.direction,myTank.barrelDirection,"blue");
 }
 function isUndefined(v) {
