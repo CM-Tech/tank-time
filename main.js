@@ -527,7 +527,7 @@ if(lastTrack<0){
     ctx.beginPath();
     ctx.fillStyle = "white";
     ctx.strokeStyle = "white";
-    ctx.strokeRect(c.width-110,c.height - 110,100,100);
+    ctx.strokeRect(Math.floor(c.width-111),Math.floor(c.height - 111),102,102);
     ctx.stroke();
     for (var i in players) {
         var theTank = players[i];
@@ -535,7 +535,10 @@ if(lastTrack<0){
             if (theTank.direction !== undefined) {
               ctx.beginPath();
               ctx.fillStyle = "white";
-              ctx.fillRect(c.width-110+theTank.x/worldWidth*100,c.height - 110+theTank.y/worldWidth*100,1,1);
+              if(i==playerRef.key){
+                  ctx.fillStyle = "red";
+              }
+              ctx.fillRect(Math.floor(c.width-110)+theTank.x/worldWidth*100,Math.floor(c.height - 110)+theTank.y/worldWidth*100,1,1);
               ctx.fill();
 
             }
