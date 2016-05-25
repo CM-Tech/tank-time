@@ -546,7 +546,7 @@ playerArray.sort(function(a, b) {
               if(i==playerRef.key){
                   ctx.fillStyle = "red";
               }
-              ctx.fillRect(Math.floor(c.width-110)+theTank.x/worldWidth*100,Math.floor(c.height - 110)+theTank.y/worldWidth*100,1,1);
+              ctx.fillRect(Math.floor(c.width-110)+theTank.x/worldWidth*100-2,Math.floor(c.height - 110)+theTank.y/worldWidth*100-2,4,4);
               ctx.fill();
 
             }
