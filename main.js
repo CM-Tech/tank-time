@@ -552,6 +552,12 @@ playerArray.sort(function(a, b) {
             }
         }
     }
+    ctx.beginPath();
+    ctx.textAlign = "center";
+    ctx.font = "20px Chewy";
+    ctx.fillStyle = "white";
+    ctx.fillText("Scoreboard", c.width-100, 20);
+    ctx.fill();
     for (var i=0;i< Math.min(playerArray.length,10);i++) {
         var theTank = playerArray[i];
         if (theTank != "M") {
@@ -560,13 +566,13 @@ playerArray.sort(function(a, b) {
     ctx.textAlign = "left";
     ctx.font = "20px Chewy";
     ctx.fillStyle = "white";
-    ctx.fillText(theTank.name, c.width-175, 10+i*30);
+    ctx.fillText(theTank.name, c.width-175, 40+i*30);
     ctx.fill();
     ctx.beginPath();
     ctx.textAlign = "right";
     ctx.font = "20px Chewy";
     ctx.fillStyle = "white";
-    ctx.fillText(theTank.score, c.width-25, 10+i*30);
+    ctx.fillText(theTank.score, c.width-25, 40+i*30);
     ctx.fill();
 
             }
