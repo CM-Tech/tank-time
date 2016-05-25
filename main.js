@@ -552,7 +552,7 @@ playerArray.sort(function(a, b) {
             }
         }
     }
-    for (var i=0;i< Math.min(playersArray.length,10);i++) {
+    for (var i=0;i< Math.min(playerArray.length,10);i++) {
         var theTank = playerArray[i];
         if (theTank != "M") {
             if (theTank.direction !== undefined) {
