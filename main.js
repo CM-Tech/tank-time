@@ -287,7 +287,7 @@ if(lastTrack<0){
     if(time-myTank.lastUpdate>10){
     myTank.lastUpdate = time;
 }
-console.log(myTank);
+
     playerRef.child("x").set(myTank.x);
     playerRef.child("y").set(myTank.y);
     playerRef.child("direction").set(myTank.direction);
@@ -326,7 +326,7 @@ console.log(myTank);
         var theTank = players[i];
         if (theTank != "M") {
             if (theTank.direction !== undefined) {
-                playerArray.push(theTank);
+                
                 drawTank(c.width / 2 - myTank.x + theTank.x, c.height / 2 - myTank.y + theTank.y, theTank.direction, theTank.barrelDirection, "blue");
                 ctx.beginPath();
                 ctx.textAlign = "center";
@@ -337,6 +337,9 @@ console.log(myTank);
                 if (time - theTank.lastUpdate > 10000) {
                     firebase.database().ref('server/players/' + i).set(null );
                     delete players[i];
+                    
+                }else{
+                    playerArray.push(theTank);
                 }
             }
         }
@@ -413,7 +416,7 @@ playerArray.sort(function(a, b) {
                             playing = false;
                             firebase.database().ref('server/bullets/' + i).set(null );
                             delete bullets[i];
-
+break;
 
                         }
                     }
