@@ -282,8 +282,9 @@ if(lastTrack<0){
     }
     myTank.x = Math.max(Math.min(worldWidth, myTank.x), 0);
     myTank.y = Math.max(Math.min(worldWidth, myTank.y), 0);
+    if(time-myTank.lastUpdate>1000){
     myTank.lastUpdate = time;
-
+}
     playerRef.child("x").set(myTank.x);
     playerRef.child("y").set(myTank.y);
     playerRef.child("direction").set(myTank.direction);
