@@ -558,9 +558,15 @@ playerArray.sort(function(a, b) {
             if (theTank.direction !== undefined) {
               ctx.beginPath();
     ctx.textAlign = "left";
-    ctx.font = "10px Chewy";
+    ctx.font = "20px Chewy";
     ctx.fillStyle = "white";
-    ctx.fillText(theTank.name+", "+theTank.score, c.width-100, 10+i*20);
+    ctx.fillText(theTank.name, c.width-175, 10+i*30);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.textAlign = "right";
+    ctx.font = "20px Chewy";
+    ctx.fillStyle = "white";
+    ctx.fillText(theTank.score, c.width-25, 10+i*30);
     ctx.fill();
 
             }
