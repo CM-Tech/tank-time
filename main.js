@@ -318,10 +318,12 @@ if(lastTrack<0){
             }
           }
         }
+        var playerArray=[];
     for (var i in players) {
         var theTank = players[i];
         if (theTank != "M") {
             if (theTank.direction !== undefined) {
+                playerArray.push(theTank);
                 drawTank(c.width / 2 - myTank.x + theTank.x, c.height / 2 - myTank.y + theTank.y, theTank.direction, theTank.barrelDirection, "blue");
                 ctx.beginPath();
                 ctx.textAlign = "center";
@@ -337,6 +339,9 @@ if(lastTrack<0){
         }
     }
 
+playerArray.sort(function(a, b) {
+  return b.score - a.score;
+});
     for (var i in bullets) {
         var theBullet = bullets[i];
         if (theBullet != "M") {
@@ -541,6 +546,20 @@ if(lastTrack<0){
               }
               ctx.fillRect(Math.floor(c.width-110)+theTank.x/worldWidth*100,Math.floor(c.height - 110)+theTank.y/worldWidth*100,1,1);
               ctx.fill();
+
+            }
+        }
+    }
+    for (var i=0;i< Math.min(playersArray.length,10);i++) {
+        var theTank = playerArray[i];
+        if (theTank != "M") {
+            if (theTank.direction !== undefined) {
+              ctx.beginPath();
+    ctx.textAlign = "left";
+    ctx.font = "10px Chewy";
+    ctx.fillStyle = "white";
+    ctx.fillText(theTank.name+", "+theTank.score, c.width-100, 10+i*20);
+    ctx.fill();
 
             }
         }
