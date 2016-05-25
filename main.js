@@ -284,7 +284,7 @@ if(lastTrack<0){
     lastTick=time;
     myTank.x = Math.max(Math.min(worldWidth, myTank.x), 0);
     myTank.y = Math.max(Math.min(worldWidth, myTank.y), 0);
-    if(time-myTank.lastUpdate>1000){
+    if(time-myTank.lastUpdate>10){
     myTank.lastUpdate = time;
 }
     playerRef.child("x").set(myTank.x);
