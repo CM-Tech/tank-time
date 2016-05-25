@@ -287,6 +287,7 @@ if(lastTrack<0){
     if(time-myTank.lastUpdate>10){
     myTank.lastUpdate = time;
 }
+console.log(myTank);
     playerRef.child("x").set(myTank.x);
     playerRef.child("y").set(myTank.y);
     playerRef.child("direction").set(myTank.direction);
