@@ -20,6 +20,7 @@ var obstaclesRef = firebase.database().ref('server/obstacles');
 var tracksRef = firebase.database().ref('server/tracks');
 var time = new Date().getTime();
 var timeOffset = 0;
+var lastTick=time;
 var worldWidth = 5000;
 var lastShoot = 0;
 var treeCords = [];
@@ -272,14 +273,15 @@ function gameLoop() {
     myTank.barrelDirection = Math.atan2(mouse.y - c.height / 2, mouse.x - c.width / 2) / Math.PI * 180;
     if (mouse.d) {
         myTank.direction = rotateTowards(myTank.direction, myTank.barrelDirection, 1);
-        myTank.x += Math.cos(myTank.direction / 180 * Math.PI) * (time - myTank.lastUpdate) / 4;
-        myTank.y += Math.sin(myTank.direction / 180 * Math.PI) * (time - myTank.lastUpdate) / 4;
-lastTrack-=(time - myTank.lastUpdate)/4;
+        myTank.x += Math.cos(myTank.direction / 180 * Math.PI) * (time - lastTick) / 4;
+        myTank.y += Math.sin(myTank.direction / 180 * Math.PI) * (time - lastTick) / 4;
+lastTrack-=(time - lastTick)/4;
 if(lastTrack<0){
   lastTrack=trackLength;
   tracksRef.push({creation:time,direction:myTank.direction,x:myTank.x,y:myTank.y});
 }
     }
+    lastTick=time;
     myTank.x = Math.max(Math.min(worldWidth, myTank.x), 0);
     myTank.y = Math.max(Math.min(worldWidth, myTank.y), 0);
     if(time-myTank.lastUpdate>1000){
