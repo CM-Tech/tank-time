@@ -20,6 +20,7 @@ var obstaclesRef = firebase.database().ref('server/obstacles');
 var tracksRef = firebase.database().ref('server/tracks');
 var time = new Date().getTime();
 var timeOffset = 0;
+var lastTick=time;
 var worldWidth = 5000;
 var lastShoot = 0;
 var treeCords = [];
@@ -272,18 +273,20 @@ function gameLoop() {
     myTank.barrelDirection = Math.atan2(mouse.y - c.height / 2, mouse.x - c.width / 2) / Math.PI * 180;
     if (mouse.d) {
         myTank.direction = rotateTowards(myTank.direction, myTank.barrelDirection, 1);
-        myTank.x += Math.cos(myTank.direction / 180 * Math.PI) * (time - myTank.lastUpdate) / 4;
-        myTank.y += Math.sin(myTank.direction / 180 * Math.PI) * (time - myTank.lastUpdate) / 4;
-lastTrack-=(time - myTank.lastUpdate)/4;
+        myTank.x += Math.cos(myTank.direction / 180 * Math.PI) * (time - lastTick) / 4;
+        myTank.y += Math.sin(myTank.direction / 180 * Math.PI) * (time - lastTick) / 4;
+lastTrack-=(time - lastTick)/4;
 if(lastTrack<0){
   lastTrack=trackLength;
   tracksRef.push({creation:time,direction:myTank.direction,x:myTank.x,y:myTank.y});
 }
     }
+    lastTick=time;
     myTank.x = Math.max(Math.min(worldWidth, myTank.x), 0);
     myTank.y = Math.max(Math.min(worldWidth, myTank.y), 0);
+    if(time-myTank.lastUpdate>1000){
     myTank.lastUpdate = time;
-
+}
     playerRef.child("x").set(myTank.x);
     playerRef.child("y").set(myTank.y);
     playerRef.child("direction").set(myTank.direction);
@@ -317,10 +320,12 @@ if(lastTrack<0){
             }
           }
         }
+        var playerArray=[];
     for (var i in players) {
         var theTank = players[i];
         if (theTank != "M") {
             if (theTank.direction !== undefined) {
+                playerArray.push(theTank);
                 drawTank(c.width / 2 - myTank.x + theTank.x, c.height / 2 - myTank.y + theTank.y, theTank.direction, theTank.barrelDirection, "blue");
                 ctx.beginPath();
                 ctx.textAlign = "center";
@@ -336,6 +341,9 @@ if(lastTrack<0){
         }
     }
 
+playerArray.sort(function(a, b) {
+  return b.score - a.score;
+});
     for (var i in bullets) {
         var theBullet = bullets[i];
         if (theBullet != "M") {
@@ -527,7 +535,7 @@ if(lastTrack<0){
     ctx.beginPath();
     ctx.fillStyle = "white";
     ctx.strokeStyle = "white";
-    ctx.strokeRect(c.width-110,c.height - 110,100,100);
+    ctx.strokeRect(Math.floor(c.width-111),Math.floor(c.height - 111),102,102);
     ctx.stroke();
     for (var i in players) {
         var theTank = players[i];
@@ -535,8 +543,25 @@ if(lastTrack<0){
             if (theTank.direction !== undefined) {
               ctx.beginPath();
               ctx.fillStyle = "white";
-              ctx.fillRect(c.width-110+theTank.x/worldWidth*100,c.height - 110+theTank.y/worldWidth*100,1,1);
+              if(i==playerRef.key){
+                  ctx.fillStyle = "red";
+              }
+              ctx.fillRect(Math.floor(c.width-110)+theTank.x/worldWidth*100,Math.floor(c.height - 110)+theTank.y/worldWidth*100,1,1);
               ctx.fill();
+
+            }
+        }
+    }
+    for (var i=0;i< Math.min(playerArray.length,10);i++) {
+        var theTank = playerArray[i];
+        if (theTank != "M") {
+            if (theTank.direction !== undefined) {
+              ctx.beginPath();
+    ctx.textAlign = "left";
+    ctx.font = "10px Chewy";
+    ctx.fillStyle = "white";
+    ctx.fillText(theTank.name+", "+theTank.score, c.width-100, 10+i*20);
+    ctx.fill();
 
             }
         }
