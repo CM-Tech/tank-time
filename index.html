@@ -73,7 +73,7 @@
 
     </head>
 
-    <body onkeydown="pressKey(event)" onmousemove="updateMouse(event)" onmousedown="updateMouse(event,1)" onmouseup="updateMouse(event,-1)" onmouseout="updateMouse(event,-1)">
+    <body onkeydown="pressKey(event);keyDown(event);" onkeyup="keyUp(event);" onmousemove="updateMouse(event)" onmousedown="updateMouse(event,1)" onmouseup="updateMouse(event,-1)" onmouseout="updateMouse(event,-1)">
         <canvas id="c"></canvas>
         <div id="input-overlay" class="input-overlay">
             <input id="name" onkeyup="typeKey(event)">
