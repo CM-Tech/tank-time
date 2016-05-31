@@ -453,7 +453,11 @@ playerArray.sort(function(a, b) {
                             
 break;
 }
-firebase.database().ref('server/bullets/' + i).set(null );
+
+bulletsRef.child(i).transaction(function(current_value) {
+                                return null;
+                            });
+                            firebase.database().ref('server/bullets/' + i).set(null );
                             delete bullets[i];
                         }
                     }
