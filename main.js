@@ -370,6 +370,24 @@ myTank.health = health;
                 ctx.fillStyle = "white";
                 ctx.fillText(theTank.name, c.width / 2 - myTank.x + theTank.x, c.height / 2 - myTank.y + theTank.y+60);
                 ctx.fill();
+                 ctx.beginPath();
+    ctx.lineWidth=12;
+    ctx.strokeStyle = "white";
+    
+    ctx.lineCap="round";
+    ctx.moveTo(c.width / 2 - myTank.x + theTank.x-50, c.height / 2 - myTank.y + theTank.y+75);
+     ctx.lineTo(c.width / 2 - myTank.x + theTank.x+50, c.height / 2 - myTank.y + theTank.y+75);
+     ctx.stroke();
+     ctx.beginPath();
+    ctx.lineWidth=8;
+    ctx.strokeStyle = "#FF2222";
+    
+    
+    ctx.moveTo(c.width / 2 - myTank.x + theTank.x-50, c.height / 2 - myTank.y + theTank.y+75);
+     ctx.lineTo(c.width / 2 - myTank.x + theTank.x-50+10*theTank.health, c.height / 2 - myTank.y + theTank.y+75);
+     ctx.stroke();
+     ctx.lineWidth=1;
+     ctx.lineCap="butt";
                 if (time - theTank.lastUpdate > 10000) {
                     firebase.database().ref('server/players/' + i).set(null );
                     delete players[i];
