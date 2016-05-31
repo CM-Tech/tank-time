@@ -282,18 +282,25 @@ function gameLoop() {
         
     }else{
         if(WKey||AKey||DKey||SKey){
+            var xK=0;
+            var yK=0;
              if(WKey){
-            myTank.direction = rotateTowards(myTank.direction, 270, 1);
+            //myTank.direction = rotateTowards(myTank.direction, 270, 1);
+            yK=-1;
             }
             if(AKey){
-            myTank.direction = rotateTowards(myTank.direction, 180, 1);
+           
+            xK=-1;
             }
             if(SKey){
-            myTank.direction = rotateTowards(myTank.direction, 90, 1);
+            //myTank.direction = rotateTowards(myTank.direction, 90, 1);
+            yK=1;
             }
             if(DKey){
-            myTank.direction = rotateTowards(myTank.direction, 0, 1);
+            //myTank.direction = rotateTowards(myTank.direction, 0, 1);
+            xK=1;
             }
+             myTank.direction = rotateTowards(myTank.direction, Math.atan2(yK, xK) / Math.PI * 180, 1);
         }
         
     }
