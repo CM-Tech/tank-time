@@ -29,6 +29,10 @@ var offsetRef = firebase.database().ref(".info/serverTimeOffset");
 var scoreListen;
 var trackLength=16;
 var lastTrack=trackLength;
+var WKey=false;
+var AKey=false;
+var DKey=false;
+var SKey=false;
 offsetRef.on("value", function(snap) {
     timeOffset = snap.val();
     time = new Date().getTime() + timeOffset;
@@ -72,6 +76,7 @@ function typeKey(event) {
     if (event.which == 13) {
         joinGame();
     }
+    
 }
 var gHost = 'https://raw.githubusercontent.com/CM-Tech/tank-time/gh-pages';
 //loadImage('https://googledrive.com/host/0B-SZEiT_s4MARkhxZmJyb1ZCQlE/dirt.png', "dirt");
@@ -666,3 +671,31 @@ function resizeCanvas() {
     draw();
 }
 window.setInterval(draw, 1);
+function keyDown(event){
+    if(event.which==87){
+        WKey=true;
+    }
+     if(event.which==65){
+        AKey=true;
+    }
+     if(event.which==68){
+        DKey=true;
+    }
+     if(event.which==83){
+        SKey=true;
+    }
+}
+function keyUp(event){
+    if(event.which==87){
+        WKey=false;
+    }
+     if(event.which==65){
+        AKey=false;
+    }
+     if(event.which==68){
+        DKey=false;
+    }
+     if(event.which==83){
+        SKey=false;
+    }
+}
