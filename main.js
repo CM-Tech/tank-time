@@ -617,13 +617,22 @@ break;
         }
     }
     ctx.beginPath();
-    
+    ctx.lineWidth=16;
     ctx.strokeStyle = "white";
     
     
-    ctx.moveTo(c.width/2-50,c.height/2+100);
-     ctx.lineTo(c.width/2+50,c.height/2+100);
+    ctx.moveTo(c.width/2-50,c.height/2+75);
+     ctx.lineTo(c.width/2+50,c.height/2+75);
      ctx.stroke();
+     ctx.beginPath();
+    ctx.lineWidth=12;
+    ctx.strokeStyle = "#FF2222";
+    
+    
+    ctx.moveTo(c.width/2-50,c.height/2+75);
+     ctx.lineTo(c.width/2+50,c.height/2+75);
+     ctx.stroke();
+     ctx.lineWidth=1;
     //drawTank(c.width/2,c.height/2,myTank.direction,myTank.barrelDirection,"blue");
 }
 function isUndefined(v) {
