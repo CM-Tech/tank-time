@@ -450,10 +450,11 @@ playerArray.sort(function(a, b) {
                             playerRef.set(null );
                             document.getElementById("input-overlay").classList.remove("hide");
                             playing = false;
-                            firebase.database().ref('server/bullets/' + i).set(null );
-                            delete bullets[i];
+                            
 break;
 }
+firebase.database().ref('server/bullets/' + i).set(null );
+                            delete bullets[i];
                         }
                     }
                 }
