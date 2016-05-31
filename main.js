@@ -33,6 +33,7 @@ var WKey=false;
 var AKey=false;
 var DKey=false;
 var SKey=false;
+var health=10;
 offsetRef.on("value", function(snap) {
     timeOffset = snap.val();
     time = new Date().getTime() + timeOffset;
@@ -139,8 +140,10 @@ function joinGame() {
         direction: 0,
         barrelDirection: 0,
         lastUpdate: time,
-        score: 0
+        score: 0,
+        health:10
     };
+    health=10;
     playerRef = playersRef.push(myTank);
     scoreListen = playerRef.child("score").on('value', function(snapshot) {
         if (snapshot.val() !== null ) {
@@ -613,6 +616,14 @@ break;
             }
         }
     }
+    ctx.beginPath();
+    
+    ctx.strokeStyle = "white";
+    
+    
+    ctx.moveTo(c.width/2-50,c.height/2+100);
+     ctx.lineTo(c.width/2+50,c.height/2+100);
+     ctx.stroke();
     //drawTank(c.width/2,c.height/2,myTank.direction,myTank.barrelDirection,"blue");
 }
 function isUndefined(v) {
