@@ -276,9 +276,28 @@ function intersectRect(r1, r2) {
 }
 function gameLoop() {
     myTank.barrelDirection = Math.atan2(mouse.y - c.height / 2, mouse.x - c.width / 2) / Math.PI * 180;
+    if (mouse.d||WKey||AKey||DKey||SKey) {
     if (mouse.d) {
         myTank.direction = rotateTowards(myTank.direction, myTank.barrelDirection, 1);
-        myTank.x += Math.cos(myTank.direction / 180 * Math.PI) * (time - lastTick) / 4;
+        
+    }else{
+        if(WKey||AKey||DKey||SKey){
+             if(WKey){
+            myTank.direction = rotateTowards(myTank.direction, 270, 1);
+            }
+            if(AKey){
+            myTank.direction = rotateTowards(myTank.direction, 180, 1);
+            }
+            if(SKey){
+            myTank.direction = rotateTowards(myTank.direction, 90, 1);
+            }
+            if(DKey){
+            myTank.direction = rotateTowards(myTank.direction, 0, 1);
+            }
+        }
+        
+    }
+    myTank.x += Math.cos(myTank.direction / 180 * Math.PI) * (time - lastTick) / 4;
         myTank.y += Math.sin(myTank.direction / 180 * Math.PI) * (time - lastTick) / 4;
 lastTrack-=(time - lastTick)/4;
 if(lastTrack<0){
