@@ -439,6 +439,8 @@ playerArray.sort(function(a, b) {
                             bulletPolygon[pI].y = Math.sin(dir) * dist + bulletRelPos.y;
                         }
                         if (doPolygonsIntersect(tankPolygon, bulletPolygon)) {
+                            health--;
+                            if(health==0){
                             playersRef.child(theBullet.owner).child("score").transaction(function(current_value) {
                                 return (current_value || 0) + 1;
                             });
@@ -451,7 +453,7 @@ playerArray.sort(function(a, b) {
                             firebase.database().ref('server/bullets/' + i).set(null );
                             delete bullets[i];
 break;
-
+}
                         }
                     }
                 }
@@ -630,7 +632,7 @@ break;
     
     
     ctx.moveTo(c.width/2-50,c.height/2+75);
-     ctx.lineTo(c.width/2+50,c.height/2+75);
+     ctx.lineTo(c.width/2-50+health*10,c.height/2+75);
      ctx.stroke();
      ctx.lineWidth=1;
      ctx.lineCap="butt";
