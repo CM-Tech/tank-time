@@ -321,12 +321,14 @@ if(lastTrack<0){
     if(time-myTank.lastUpdate>10){
     myTank.lastUpdate = time;
 }
+myTank.health = health;
 
     playerRef.child("x").set(myTank.x);
     playerRef.child("y").set(myTank.y);
     playerRef.child("direction").set(myTank.direction);
     playerRef.child("barrelDirection").set(myTank.barrelDirection);
     playerRef.child("lastUpdate").set(myTank.lastUpdate);
+    playerRef.child("health").set(myTank.health);
     if (images.dirt != null ) {
 
         ctx.translate(-myTank.x, -myTank.y);
